@@ -1,0 +1,24 @@
+{
+  "burgers": [
+    {
+      "category": "스페셜&할인팩",
+      "menuname": "123",
+      "id": 1
+    },
+    {
+      "category": "신제품(NEW)",
+      "menuname": "123",
+      "id": 2
+    },
+    {
+      "category": "프리미엄",
+      "menuname": "234",
+      "id": 3
+    },
+    {
+      "category": "치킨&슈림프버거",
+      "menuname": "123",
+      "id": 4
+    }
+  ]
+}
