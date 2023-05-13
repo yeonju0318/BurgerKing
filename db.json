@@ -1,16 +1,6 @@
 {
   "burgers": [
     {
-      "category": "스페셜&할인팩",
-      "menuname": "123",
-      "id": 1
-    },
-    {
-      "category": "신제품(NEW)",
-      "menuname": "123",
-      "id": 2
-    },
-    {
       "category": "프리미엄",
       "menuname": "234",
       "id": 3
@@ -19,6 +9,27 @@
       "category": "치킨&슈림프버거",
       "menuname": "123",
       "id": 4
+    },
+    {
+      "category": "231",
+      "menuname": "213",
+      "image": "https://d1cua0vf0mkpiy.cloudfront.net/images/menu/normal/e626ab96-102e-4a1d-9770-cb3a7116877a.png",
+      "id": 5
+    },
+    {
+      "category": "스페셜&할인팩",
+      "menuname": "123",
+      "id": 6
+    },
+    {
+      "category": "스페셜&할인팩",
+      "menuname": "123",
+      "id": 7
+    },
+    {
+      "category": "스페셜&할인팩",
+      "menuname": "123",
+      "id": 8
     }
   ]
 }
