@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import { styled } from "styled-components";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
   const navigate = useNavigate();
+
   return (
     <>
       <Navbar message="로그인" />
@@ -22,12 +23,16 @@ function Login() {
             <p className="mt-4 text-2xl font-bold">일반 로그인</p>
             <div className="flex flex-col items-center mt-6">
               <Logininput
-                type="text"
+                type="email"
+                value={Email}
+                onChange={onEmailHandler}
                 placeholder="아이디(이메일)"
                 className="w-96 px-4 py-2 border-2 border-gray-400 rounded-lg mb-4"
               />
               <Logininput
                 type="password"
+                value={Password}
+                onChange={onPasswordHandler}
                 placeholder="비밀번호"
                 className="w-96 px-4 py-2 border-2 border-gray-400 rounded-lg mb-4"
               />
