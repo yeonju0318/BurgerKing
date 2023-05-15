@@ -14,8 +14,10 @@ import InputRadio from "../components/Signup/InputRadio";
 import useInput from "../hooks/useInput";
 import { useMutation, useQueryClient } from "react-query";
 import { signup } from "../api/signup";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
+  const navigate = useNavigate()
   const [username, onChangeUsernameHandler] = useInput();
   const [password, onChangePasswordHandler] = useInput();
   const [email, onChangeEmailHandler] = useInput();

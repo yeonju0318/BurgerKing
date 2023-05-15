@@ -1,49 +1,38 @@
 import React from "react";
 import Header from "../components/Header";
 import { styled } from "styled-components";
-import { useState, useEffect } from "react";
-import instance from "../axios/api";
+import { useState } from "react";
 import { useQuery } from "react-query";
 import { useParams, Link, } from "react-router-dom";
+import { getBurger } from '../api/posts';
 
 
 function Home() {
-
-  // const getPosts = async () => {
-  //   console.log()
-  //   try {
-  //     const response = await instance.get(
-  //       `/burgers`,
-  //     );
-  //     console.log(response)
-  //     return response.data
-  //   } catch (err) {
-  //     console.log(`데이터 불러오는 중에 오류 발생: ${err}`);
-  //   }
-  // };
-
+  //==== ID값
   const { id } = useParams
-  const [burgers, setBurgers] = useState(null);
-  // 비동기 함수 : 서버(json-server)에 inputValue를 요청하는 함수
-  const fetchTodos = async () => {
-    const { data } = await instance.get(
-      "/burgers"
-    );
-    setBurgers(data)
+  const [selectedItem, setSelectedItem] = useState("스페셜&할인팩");
+  const test = ["스페셜&할인팩", "신제품(NEW)", "프리미엄", "와퍼&주니어", "치킨&슈림프버거", "올데이킹&킹모닝", "사이드", "음료&디저트"]
+
+  //=============================================
+
+  const itemClickHandler = (category) => {
+    setSelectedItem(category);
+  };
+  // ===============리액트 쿼리 관련 코드=========================
+
+
+  const { isLoading, isError, data, enabled } = useQuery(["burgers", selectedItem], () => getBurger(selectedItem), {
+    enabled: !!selectedItem
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
-  useEffect(() => {
-    //db로부터 값을 가져올 것이다.
-    fetchTodos();
-  }, [])
-  
-  const [selectedItem, setSelectedItem] = useState("신제품&할인팩");
-  const [selectCategory, setSelectCategory] = useState(false)
-  const itemClickHandler = (asd) => {
-    setSelectedItem(asd);
-    setSelectCategory(!selectCategory)
-  };
-  const burger =burgers?.filter((item)=>item.category==selectedItem) 
+  if (isError) {
+    return <div>Error occurred.</div>;
+  }
+  const burger = data?.filter((item) => item.category == selectedItem)
   return (
     <>
       <Header />
@@ -55,32 +44,22 @@ function Home() {
           <StNavMenuList>
             <StMenu>메뉴소개</StMenu>
             <StMenuList>
-              {selectCategory?<StBurgers onClick={(e)=>itemClickHandler("스페셜&할인팩")}>스페셜&할인팩</StBurgers>
-              :
-              <StBurgers2 onClick={(e)=>itemClickHandler("스페셜&할인팩")}>스페셜&할인팩</StBurgers2>}
-              <StBurgers onClick={(e)=>itemClickHandler("스페셜&할인팩")}>스페셜&할인팩</StBurgers>
-              <StBurgers onClick={(e)=>itemClickHandler("신제품(NEW)")}>신제품(NEW)</StBurgers>
-              <StBurgers onClick={(e)=>itemClickHandler("프리미엄")}>프리미엄</StBurgers>
-              <StBurgers onClick={(e)=>itemClickHandler("와퍼&주니어")}>와퍼&주니어</StBurgers>
-              <StBurgers onClick={(e)=>itemClickHandler("치킨&슈림프버거")}>치킨&슈림프버거</StBurgers>
-              <StBurgers onClick={(e)=>itemClickHandler("올데이킹&킹모닝")}>올데이킹&킹모닝</StBurgers>
-              <StBurgers onClick={(e)=>itemClickHandler("사이드")}>사이드</StBurgers>
-              <StBurgers onClick={(e)=>itemClickHandler("음료&디저트")}>음료&디저트</StBurgers>
+              {test.map((item) => {
+                return (
+                  <StBurgers key={item.id} onClick={() => itemClickHandler(item)}>{item}</StBurgers>
+                )
+              })}
             </StMenuList>
           </StNavMenuList>
           <StBurgerList>
-            <div>
-              <div>
-                <StImg src="https://d1cua0vf0mkpiy.cloudfront.net/images/menu/normal/e626ab96-102e-4a1d-9770-cb3a7116877a.png" />
-              </div>
-              <StImgTitle>스모키 바비큐 와퍼 팩1</StImgTitle>
-            </div>
+
             {burger?.map((item) => {
               return (
                 <div key={item.id}>
                   <Link to={`/menus/${item.id}`} key={item.id}>
                     <div>
-                      <StImg src="https://d1cua0vf0mkpiy.cloudfront.net/images/menu/normal/e626ab96-102e-4a1d-9770-cb3a7116877a.png" />
+                      <StImg src={item.imageUrl
+                      } />
                     </div>
                     <StImgTitle>{item.menuname}</StImgTitle>
                   </Link>
@@ -137,6 +116,7 @@ const StMenu = styled.div`
 const StImg = styled.img`
   display: flex;
   width: 240px;
+  height: 180px;
 `
 const StImgTitle = styled.div`
   font-size: 1.25rem;
@@ -150,14 +130,14 @@ const StBurgerList = styled.div`
   flex-wrap: wrap;
   
 `
-const StBurgers =styled.div`
+const StBurgers = styled.div`
   border-width: 0px 0px 3px 0;
   /* margin-left: 10px; */
   &:hover{
     color: black;
   }
 `
-const StBurgers2 =styled.div`
+const StBurgers2 = styled.div`
   border: 1px solid pink;
     color: pink;
   border-width: 0px 0px 3px 0;

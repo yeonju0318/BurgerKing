@@ -4,71 +4,64 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom/dist";
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import instance from "../axios/api";
+import instance from "../axios/instance";
 import AWS from "aws-sdk";
+import ReactS3 from 'react-s3';
+import S3upload from 'react-aws-s3';
+import { addburger } from '../api/posts';
+import { useMutation, useQueryClient } from "react-query";
 function Header() {
 
   const nav = useNavigate()
-  //들어갈 카테고리, 메뉴이름, URL
-  const [addList, setAddList] = useState({
-    category: "",
-    menuname: "",
-    image: null
+
+  // 리액트 쿼리 관련 코드
+  const queryClient = useQueryClient();
+  const mutation = useMutation(addburger, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("burger")
+      console.log("버거 등록 성공!")
+    }
   })
-  //들어갈 카테고리, 메뉴이름 핸들러
-  const addListHandler = (e) => {
-    const { name, value } = e.target
-    setAddList({ ...addList, [name]: value })
-  }
-  //들어갈 이미지 핸들러
-  const imageHandler = (e) => {
-    const file=setAddList({ ...addList, image: e.target.files[0] })
-  
-  }
-  //메뉴 등록창 모달 
+  // 이미지 
+  const [image, setImage] = useState(null);
+  // 메뉴이름
+  const [menuname, setMenuname] = useState("");
+  // 카테고리
+  const [category, setcategory] = useState("")
+  // 메뉴 등록창 모달 
   const [addModalOpen, setAddModalOpen] = useState(false);
+  // 카테고리 드롭다운
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  // 카테고리 드롭다운 입력값
+  const [selectedItem, setSelectedItem] = useState("카테고리");
+
+  //==============================================
+
+  //들어갈 이미지 핸들러
+  const handleFileInput = (e) => {
+    setImage(e.target.files[0])
+  };
   //메뉴 등록창 모달 온오프
   const showAddModal = () => {
     setAddModalOpen(!addModalOpen)
   }
-
-  //카테고리 드롭다운
-  const [categoryOpen, setCategoryOpen] = useState(false);
-  //카테고리 드롭다운 온오프
-  const [selectedItem, setSelectedItem] = useState("카테고리");
-
-  //드롭다운 카테고리 클릭시 카테고리 변경
+  //드롭다운 카테고리 클릭시 카테고리 변경 핸들러
   const itemClickHandler = (item) => {
-    setAddList({
-      category: item
-    });
+    setcategory(item);
     setCategoryOpen(false);
   };
+  //=================================================================
   //버거 등록 핸들러
-  const addHandler = async () => {
-    await instance.post("/burgers", addList)
-    // fetchTodos()
-    alert("버거등록!")
-    setAddList({
-      category: "",
-      menuname: "",
-      image: null
-    })
-    console.log(addList)
-    // setAddModalOpen(!addModalOpen)
+  const addHandler = async(e) => {
+    const newList = new FormData();
+    newList.append("image", image);
+    newList.append("category", category);
+    newList.append("menuname", menuname);
+    console.log(newList)
+    mutation.mutate(newList);
+    showAddModal()
   }
-  // console.log(addList)
-  //=================================================================
-  const region = "ap-northeast-2";
-  const bucket = "elice-boardgame-project";
 
-  AWS.config.update({
-      region: region,
-      accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
-  });
-
-  //=================================================================
   return (
     <StLayout>
       <StHeaders>
@@ -84,7 +77,7 @@ function Header() {
         </StHeader>
       </StHeaders>
 
-      {/* 추가 모달창 */}
+      {/* 메뉴 등록창 */}
       {addModalOpen && (
         <ModalOverlay onClick={showAddModal}>
           <ModalContent onClick={(e) => e.stopPropagation()}>
@@ -101,12 +94,17 @@ function Header() {
                 등록
               </button>
             </ModalButton>
-            <StAddForm>
+            <StAddForm
+              method="post"
+              encType="multipart/form-data"
+                onSubmit={addHandler}
+            >
               <div>
                 <StAddImg>
                   이미지<input
                     type='file'
-                    onChange={imageHandler}
+                    onChange={handleFileInput}
+                    enc
                   />
                 </StAddImg>
               </div>
@@ -115,10 +113,10 @@ function Header() {
               <StAddInputForms>
                 <StAddInputForm>
                   <div>
-                    <button
+                    <div
                       onClick={() => setCategoryOpen(!categoryOpen)}
                     >{selectedItem}
-                    </button>
+                    </div>
                     {categoryOpen && (
                       <DropdownList>
                         <Stbutton123
@@ -153,14 +151,14 @@ function Header() {
                   </div>
                   <StInput
                     name='category'
-                    value={addList.category}
-                    onChange={addListHandler}
+                    value={category}
+                    onChange={(e) => setcategory(e.target.value)}
                   /></StAddInputForm>
                 <StAddInputForm>
                   메뉴이름: <StInput
                     name='menuname'
-                    value={addList.menuname}
-                    onChange={addListHandler}
+                    value={menuname}
+                    onChange={(e) => setMenuname(e.target.value)}
                   /></StAddInputForm>
               </StAddInputForms>
             </StAddForm>
@@ -233,7 +231,7 @@ export const StAddImg = styled.div`
   height: 400px;
   border: 2px solid pink;
 `
-export const StAddForm = styled.div`
+export const StAddForm = styled.form`
   display: flex;
   gap: 20px;
 `
