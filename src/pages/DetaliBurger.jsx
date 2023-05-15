@@ -1,52 +1,47 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import instance from "../axios/instance";
-import { useParams, useNavigate } from "react-router-dom/";
-import { styled } from "styled-components";
-import axios from "axios";
+
+import { useParams, useNavigate, } from "react-router-dom/";
+import { styled } from 'styled-components';
+import { getBurger } from '../api/posts';
+import { useQuery } from "react-query";
 
 function DetaliBurger() {
   // 파람스
-  const { id } = useParams();
-  // 네비게이터
-  const navigate = useNavigate();
-  //db를 버거스에 담아둠
-  const [burgers, setBurgers] = useState(null);
-  // 업데이트 데이터 인풋값
-  const [updateList, setUpdateList] = useState({
-    category: "",
-    menuname: "",
-    image:
-      "https://d1cua0vf0mkpiy.cloudfront.net/images/menu/normal/e626ab96-102e-4a1d-9770-cb3a7116877a.png",
-  });
+  const { id } = useParams()
   // 수정모달
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   // 삭제모달
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  // 비동기 함수 : 서버(json-server)에 inputValue를 요청하는 함수
-  const fetchTodos = async () => {
-    const { data } = await instance.get("/burgers");
-    setBurgers(data);
-  };
 
-  useEffect(() => {
-    //db로부터 값을 가져올 것이다.
-    fetchTodos();
-  }, []);
-  const burger = burgers?.find((item) => item.id == id);
-  console.log(burger);
+  // 이미지 
+  const [image, setImage] = useState(null);
+  // 메뉴이름
+  const [menuname, setMenuname] = useState("");
+  // 카테고리
+  const [category, setcategory] = useState("")
+  // 네비게이터
+  const navigate = useNavigate()
   // 수정모달창 오픈
   const updateShowModal = () => {
     setUpdateModalOpen(!updateModalOpen);
   };
+  // 삭제모달창 오픈
+  const deleteShowModal = () => {
+    setDeleteModalOpen(!deleteModalOpen);
+  };
+  //===========================
+
   // 수정 핸들러
   const updateHandler = (e) => {
-    const { name, value } = e.target;
-    return setUpdateList({ ...updateList, [name]: value });
-  };
-  // 수정버튼 핸들러
+
+    const { name, value } = e.target
+    return setUpdateList({ ...updateList, [name]: value })
+  }
+  // 수정버튼 axios
   const updateButtonHandler = async () => {
-    await instance.patch(`/burgers/${id}`, {
+    await instance.patch(`/api/menus/${id}`, {
       category: updateList.category,
       menuname: updateList.menuname,
       image:
@@ -55,33 +50,47 @@ function DetaliBurger() {
     setUpdateList({
       category: "",
       menuname: "",
-    });
-    fetchTodos(); // 이건 서버열리면 바뀔듯
+
+    })
     setUpdateModalOpen(!updateModalOpen);
-  };
-  // 삭제모달창 오픈
-  const deleteShowModal = () => {
-    setDeleteModalOpen(!deleteModalOpen);
-  };
-  // 삭제버튼 핸들러
+  }
+  // 삭제버튼 axios
   const deleteHandler = async (id) => {
-    await instance.delete(`/burgers/${id}`);
-  };
+    await instance.delete(`/api/menus/${id}`)
+  }
+  
+  const { isLoading, isError, data, enabled } = useQuery(["burgers", ], () => getBurger(), {
+    
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error occurred.</div>;
+  }
+  // const burger = burgers?.find((item) => item.id == id)
+  console.log("data = ",data)
+
   return (
     <>
-      <div>id: {burger?.id}</div>
+      <div>id: 
+        {/* {burger?.id} */}
+        </div>
       <StDetailContent>
         <StFlex>
-          <StAddImg>image: {burger?.image}</StAddImg>
+          <StAddImg>image: 
+            {/* {burger?.image} */}
+            </StAddImg>
           <StAddInputForms>
-            <div>
-              카테고리:
-              <br /> {burger?.category}
+
+            <div>카테고리:<br /> 
+            {/* {burger?.category} */}
             </div>
             <br />
-            <div>
-              menuname:
-              <br /> {burger?.menuname}
+            <div>menuname:<br /> 
+            {/* {burger?.menuname} */}
             </div>
             <br />
             {updateModalOpen && (
