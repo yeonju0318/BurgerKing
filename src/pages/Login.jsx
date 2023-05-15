@@ -2,9 +2,41 @@ import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import { styled } from "styled-components";
 import { useNavigate } from "react-router-dom";
+import useInput from "../hooks/useInput";
+import { useCookies } from "react-cookie";
+import { useMutation } from "react-query";
+import { login } from "../api/login";
 
 function Login() {
   const navigate = useNavigate();
+  const [emailId, onChangeEmailIdHandler] = useInput();
+  const [password, onChangePasswordHandler] = useInput();
+  const [cookies, setCookie, removeCookie] = useCookies();
+
+  const mutation = useMutation(login, {
+    async onSuccess(data) {
+      const { token: accessToken, loginSuccess } = data;
+      const expireTime = new Date(new Date().getTime() + 30 * 60 * 1000);
+      // console.log(loginSuccess);
+      setCookie("userAuth", accessToken, { path: "/", expires: expireTime });
+      setTimeout(() => {
+        navigate("/");
+      }, 600);
+    },
+  });
+
+  const loginHandler = (e) => {
+    e.preventDefault();
+    console.log("test");
+
+    if (!emailId || !password)
+      return alert("이메일과 비밀번호를 입력해주세요.");
+    console.log(emailId, password);
+    mutation.mutate({
+      emailId,
+      password,
+    });
+  };
 
   return (
     <>
@@ -22,30 +54,38 @@ function Login() {
           <div>
             <p className="mt-4 text-2xl font-bold">일반 로그인</p>
             <div className="flex flex-col items-center mt-6">
-              <Logininput
-                type="email"
-                // value={Email}
-                // onChange={onEmailHandler}
-                placeholder="아이디(이메일)"
-                className="w-96 px-4 py-2 border-2 border-gray-400 rounded-lg mb-4"
-              />
-              <Logininput
-                type="password"
-                // value={Password}
-                // onChange={onPasswordHandler}
-                placeholder="비밀번호"
-                className="w-96 px-4 py-2 border-2 border-gray-400 rounded-lg mb-4"
-              />
-              <div className="flex w-96 gap-2 ">
-                <ButtonLogin>로그인</ButtonLogin>
-                <ButtonSignup
-                  onClick={() => {
-                    navigate("/signup");
-                  }}
-                >
-                  회원가입
-                </ButtonSignup>
-              </div>
+              <form onSubmit={loginHandler}>
+                <Logininput
+                  type="email"
+                  id="emailId"
+                  name="emailId"
+                  value={emailId}
+                  onChange={onChangeEmailIdHandler}
+                  placeholder="아이디(이메일)"
+                  className="w-96 px-4 py-2 border-2 border-gray-400 rounded-lg mb-4"
+                />
+                <Logininput
+                  type="password"
+                  onChange={onChangePasswordHandler}
+                  id="password"
+                  name="password"
+                  value={password}
+                  placeholder="비밀번호"
+                  className="w-96 px-4 py-2 border-2 border-gray-400 rounded-lg mb-4"
+                />
+                <div className="flex w-96 gap-2 ">
+                  <ButtonLogin>로그인</ButtonLogin>
+
+                  <ButtonSignup
+                    type="button"
+                    onClick={() => {
+                      navigate("/signup");
+                    }}
+                  >
+                    회원가입
+                  </ButtonSignup>
+                </div>
+              </form>
             </div>
           </div>
           <div>
@@ -105,7 +145,7 @@ export const Logininput = styled.input`
   width: 100%;
 `;
 
-const ButtonLogin = styled.div`
+const ButtonLogin = styled.button`
   background: #d72300;
   border: 1px solid #d72300;
   width: 300px;
@@ -121,7 +161,7 @@ const ButtonLogin = styled.div`
   border-radius: 10px;
 `;
 
-const ButtonSignup = styled.div`
+const ButtonSignup = styled.button`
   background: #512314;
   border: 1px solid #512314;
   width: 300px;
