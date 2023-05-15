@@ -14,16 +14,30 @@ import InputRadio from "../components/Signup/InputRadio";
 import useInput from "../hooks/useInput";
 import { useMutation, useQueryClient } from "react-query";
 import { signup } from "../api/signup";
+import { useNavigate } from "react-router";
 
 function Signup() {
-  const [username, onChangeUsernameHandler] = useInput();
+  const navigate = useNavigate();
+  const [userName, onChangeUsernameHandler] = useInput();
   const [password, onChangePasswordHandler] = useInput();
-  const [email, onChangeEmailHandler] = useInput();
+  const [emailId, onChangeEmailidHandler] = useInput();
+  const [admin, setAdmin] = useState(false);
+  const [tokenSting, setToken] = useState(null);
 
-  // const queryClient = useQueryClient();
+  const handleAdminChange = (selectedOption) => {
+    setAdmin(selectedOption === "체크");
+  };
+
+  const handleTokenChange = (e) => {
+    setToken(e.target.value);
+  };
+
+  const queryClient = useQueryClient();
   const mutation = useMutation(signup, {
     onSuccess: () => {
       console.log("회원가입 완료");
+      alert("회원가입 완료");
+      navigate("/login");
     },
   });
 
@@ -33,10 +47,10 @@ function Signup() {
     const usernameRegex = /^[a-z0-9]{4,10}$/;
     const passwordRegex = /^[a-zA-Z0-9]{8,15}$/;
 
-    if (!username || !password || !email) {
+    if (!userName || !password || !emailId) {
       alert("이메일,비밀번호와 닉네임을 모두 입력하세요.");
       return;
-    } else if (!usernameRegex.test(username)) {
+    } else if (!usernameRegex.test(userName)) {
       alert("닉네임은 최소 4~10자, 알파벳 소문자 및 숫자로 구성되어야 합니다.");
       return;
     } else if (!passwordRegex.test(password)) {
@@ -46,13 +60,13 @@ function Signup() {
       return;
     } else {
       mutation.mutate({
-        username,
+        emailId,
+        userName,
         password,
-        email,
+        admin,
+        tokenSting,
       });
     }
-    alert("회원가입 완료");
-    return navigate("/login");
   };
 
   return (
@@ -61,26 +75,26 @@ function Signup() {
       <Container className="pt-20">
         <SignupContainer>
           <SignupTitle>기본정보</SignupTitle>
-          <form ouSubmit={formValidation}>
+          <form onSubmit={formValidation}>
             <InputContainer>
               <div>test</div>
               <div>
-                <InputLabel>이메일 아이디</InputLabel>
+                <InputLabel>이메일</InputLabel>
                 <InputField
                   type="email"
-                  id="email"
-                  name="email"
-                  value={email}
-                  onChange={onChangeEmailHandler}
+                  id="emailId"
+                  name="emailId"
+                  value={emailId}
+                  onChange={onChangeEmailidHandler}
                 />
               </div>
               <div>
                 <InputLabel>닉네임</InputLabel>
                 <InputField
                   type="text"
-                  id="username"
-                  name="username"
-                  value={username}
+                  id="userName"
+                  name="userName"
+                  value={userName}
                   onChange={onChangeUsernameHandler}
                 />
               </div>
@@ -90,11 +104,20 @@ function Signup() {
               <div>test</div>
               <div className="flex">
                 <InputLabel>ADMIN</InputLabel>
-                <InputRadio options={["체크"]} />
+                <InputRadio
+                  options={["체크"]}
+                  selectedOption={admin ? "체크" : ""}
+                  onChange={handleAdminChange}
+                />
               </div>
               <div>
                 <InputLabel>TOKEN</InputLabel>
-                <InputField type="text" />
+                <InputField
+                  type="text"
+                  id="tokenSting"
+                  name="tokenSting"
+                  onChange={handleTokenChange}
+                />
               </div>
             </InputContainer>
             <SignupTitle>비밀번호 입력</SignupTitle>

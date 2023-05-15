@@ -1,11 +1,21 @@
 import React from "react";
 
-function InputRadio({ options }) {
+function InputRadio({ options, selectedOption, onChange }) {
+  const handleOptionChange = (e) => {
+    const selectedOption = e.target.value;
+    onChange(selectedOption);
+  };
+
   return (
-    <div className="pl-10">
+    <div className="pl-6">
       {options.map((option, index) => (
         <label className="mr-10" key={index}>
-          <input type="checkbox" value={option} />
+          <input
+            type="radio"
+            value={option}
+            checked={option === selectedOption}
+            onChange={handleOptionChange}
+          />
           {option}
         </label>
       ))}

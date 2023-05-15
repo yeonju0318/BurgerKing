@@ -1,4 +1,4 @@
-import axios from "axios";
+import instance from "../axios/instance";
 
 const signup = async (users) => {
   try {
