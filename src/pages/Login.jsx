@@ -2,9 +2,41 @@ import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import { styled } from "styled-components";
 import { useNavigate } from "react-router-dom";
+import useInput from "../hooks/useInput";
+import { useCookies } from "react-cookie";
+import { useMutation } from "react-query";
+import { login } from "../api/login";
 
 function Login() {
   const navigate = useNavigate();
+  const [emailId, onChangeEmailIdHandler] = useInput();
+  const [password, onChangePasswordHandler] = useInput();
+  const [cookies, setCookie, removeCookie] = useCookies();
+
+  const mutation = useMutation(login, {
+    async onSuccess(data) {
+      const { token: accessToken, loginSuccess } = data;
+      const expireTime = new Date(new Date().getTime() + 30 * 60 * 1000);
+      // console.log(loginSuccess);
+      setCookie("userAuth", accessToken, { path: "/", expires: expireTime });
+      setTimeout(() => {
+        navigate("/");
+      }, 600);
+    },
+  });
+
+  const loginHandler = (e) => {
+    e.preventDefault();
+    console.log("test");
+
+    if (!emailId || !password)
+      return alert("이메일과 비밀번호를 입력해주세요.");
+    console.log(emailId, password);
+    mutation.mutate({
+      emailId,
+      password,
+    });
+  };
 
   return (
     <>
@@ -22,30 +54,38 @@ function Login() {
           <div>
             <p className="mt-4 text-2xl font-bold">일반 로그인</p>
             <div className="flex flex-col items-center mt-6">
-              <Logininput
-                type="email"
-                value={Email}
-                onChange={onEmailHandler}
-                placeholder="아이디(이메일)"
-                className="w-96 px-4 py-2 border-2 border-gray-400 rounded-lg mb-4"
-              />
-              <Logininput
-                type="password"
-                value={Password}
-                onChange={onPasswordHandler}
-                placeholder="비밀번호"
-                className="w-96 px-4 py-2 border-2 border-gray-400 rounded-lg mb-4"
-              />
-              <div className="flex w-96 gap-2 ">
-                <ButtonLogin>로그인</ButtonLogin>
-                <ButtonSignup
-                  onClick={() => {
-                    navigate("/signup");
-                  }}
-                >
-                  회원가입
-                </ButtonSignup>
-              </div>
+              <form onSubmit={loginHandler}>
+                <Logininput
+                  type="email"
+                  id="emailId"
+                  name="emailId"
+                  value={emailId}
+                  onChange={onChangeEmailIdHandler}
+                  placeholder="아이디(이메일)"
+                  className="w-96 px-4 py-2 border-2 border-gray-400 rounded-lg mb-4"
+                />
+                <Logininput
+                  type="password"
+                  onChange={onChangePasswordHandler}
+                  id="password"
+                  name="password"
+                  value={password}
+                  placeholder="비밀번호"
+                  className="w-96 px-4 py-2 border-2 border-gray-400 rounded-lg mb-4"
+                />
+                <div className="flex w-96 gap-2 ">
+                  <ButtonLogin>로그인</ButtonLogin>
+
+                  <ButtonSignup
+                    type="button"
+                    onClick={() => {
+                      navigate("/signup");
+                    }}
+                  >
+                    회원가입
+                  </ButtonSignup>
+                </div>
+              </form>
             </div>
           </div>
           <div>
@@ -53,7 +93,10 @@ function Login() {
             <div className="flex flex-col items-center mt-6">
               <div className="flex items-center justify-between w-96 px-4 py-2 border-2 border-gray-400 rounded-lg mb-4">
                 <div className="flex items-center space-x-4">
-                  <img src="https://dummyimage.com/40x40/000/fff" alt="naver" />
+                  <img
+                    src="data:image/gif;base64,R0lGODlhHgAeANUAAGDYSzPNGC7MEmTZT1TVPbXtq/7//lnWQ63roiHJA/v++ozjfeX54anqnun65k3TNc3zxr/vt/T887ftrV7YSSvLD9332KHolDDMFC/ME+r65zXOGifKCjjOHj7QJPD77m3bWkbSLXjeZlPVPP///x7IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4zLWMwMTEgNjYuMTQ1NjYxLCAyMDEyLzAyLzA2LTE0OjU2OjI3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpFMTEzRjE5OTJEOTgxMUU5OTJCREI1RUZCODU3NkNDQyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpFMTEzRjE5QTJEOTgxMUU5OTJCREI1RUZCODU3NkNDQyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkUxMTNGMTk3MkQ5ODExRTk5MkJEQjVFRkI4NTc2Q0NDIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkUxMTNGMTk4MkQ5ODExRTk5MkJEQjVFRkI4NTc2Q0NDIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEAAAAAAAsAAAAAB4AHgAABrLAknBILBqPyKRyyWw6n0OBaEoVDYyBKjVgDJG+YJLhUByFwaPuGcyoEM3rdNG7/jbedTmRXiddhXBnekN8dRoYgHlqfV8FiXGLjCQgJYFhg0KFfR8blmiRkhEEinOSYQike3UFpp+lawATrSSYJZpfABkOrbW3JAAlFAamvXXAJRfEoGDHHBaSxbBDDwqM0WfHQgvWy7hECRB912HZQh4SqVFaUx1GBOsiXFDz9PX290tBADs="
+                    alt="naver"
+                  />
                   <span>네이버 로그인</span>
                 </div>
                 <button className="bg-gray-300 text-gray-700 font-bold rounded-lg">
@@ -62,7 +105,10 @@ function Login() {
               </div>
               <div className="flex items-center justify-between w-96 px-4 py-2 border-2 border-gray-400 rounded-lg mb-4">
                 <div className="flex items-center space-x-4">
-                  <img src="https://dummyimage.com/40x40/000/fff" alt="kakao" />
+                  <img
+                    src="data:image/gif;base64,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"
+                    alt="kakao"
+                  />
                   <span>카카오톡 로그인</span>
                 </div>
                 <button className="bg-gray-300 text-gray-700 font-bold rounded-lg">
@@ -71,7 +117,10 @@ function Login() {
               </div>
               <div className="flex items-center justify-between w-96 px-4 py-2 border-2 border-gray-400 rounded-lg">
                 <div className="flex items-center space-x-4">
-                  <img src="https://dummyimage.com/40x40/000/fff" alt="apple" />
+                  <img
+                    src="data:image/gif;base64,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"
+                    alt="apple"
+                  />
                   <span>애플 로그인</span>
                 </div>
                 <button className="bg-gray-300 text-gray-700 font-bold rounded-lg">
@@ -96,7 +145,7 @@ export const Logininput = styled.input`
   width: 100%;
 `;
 
-const ButtonLogin = styled.div`
+const ButtonLogin = styled.button`
   background: #d72300;
   border: 1px solid #d72300;
   width: 300px;
@@ -112,7 +161,7 @@ const ButtonLogin = styled.div`
   border-radius: 10px;
 `;
 
-const ButtonSignup = styled.div`
+const ButtonSignup = styled.button`
   background: #512314;
   border: 1px solid #512314;
   width: 300px;

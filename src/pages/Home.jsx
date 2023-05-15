@@ -33,6 +33,7 @@ function Home() {
     return <div>Error occurred.</div>;
   }
   const burger = data?.filter((item) => item.category == selectedItem)
+
   return (
     <>
       <Header />
@@ -49,6 +50,7 @@ function Home() {
                   <StBurgers key={item.id} onClick={() => itemClickHandler(item)}>{item}</StBurgers>
                 )
               })}
+
             </StMenuList>
           </StNavMenuList>
           <StBurgerList>
@@ -64,31 +66,31 @@ function Home() {
                     <StImgTitle>{item.menuname}</StImgTitle>
                   </Link>
                 </div>
-              )
+              );
             })}
           </StBurgerList>
         </StMenuLayouy>
       </StLayout>
     </>
-  )
+  );
 }
 
 export default Home;
 
 const StLayout = styled.div`
-border: 2px solid pink;
+  border: 2px solid pink;
   width: 100%;
   height: 100%;
   max-width: 1200px;
   margin: 0px auto;
-`
+`;
 const StMenuLayouy = styled.div`
   padding: 20px;
-`
+`;
 
 const Stnavbars = styled.div`
   background-color: black;
-`
+`;
 const Stnavbar = styled.div`
   color: white;
   font-size: 16px;
@@ -97,48 +99,52 @@ const Stnavbar = styled.div`
   margin: 0 auto;
   padding-top: 20px;
   padding-left: 20px;
-`
+`;
 const StNavMenuList = styled.div`
   display: flex;
   padding: 50px 0 45px;
-`
+`;
 const StMenuList = styled.div`
   display: flex;
   color: #b8b8b8;
   gap: 12px;
-      font-weight: 1000;
-
-`
+  font-weight: 1000;
+`;
 const StMenu = styled.div`
-    font-size: 2.5em;
-      font-weight: 1000;
-`
+  font-size: 2.5em;
+  font-weight: 1000;
+`;
 const StImg = styled.img`
   display: flex;
   width: 240px;
+
   height: 180px;
 `
+
 const StImgTitle = styled.div`
   font-size: 1.25rem;
-      font-weight: 1000;
-      color: black;
-    text-decoration: none;
-`
+  font-weight: 1000;
+  color: black;
+  text-decoration: none;
+`;
 const StBurgerList = styled.div`
   display: flex;
   gap: 66px;
   flex-wrap: wrap;
   
 `
+
 const StBurgers = styled.div`
   border-width: 0px 0px 3px 0;
   /* margin-left: 10px; */
-  &:hover{
+  &:hover {
     color: black;
   }
+
 `
+
 const StBurgers2 = styled.div`
   border: 1px solid pink;
-    color: pink;
+  color: pink;
   border-width: 0px 0px 3px 0;
-` 
+`;

@@ -45,7 +45,7 @@ baseURL.interceptors.request.use((config) => {
   console.log(config);
   if (config.headers === undefined) return;
   const token = config.headers.get("authorization");
-  config.headers["Authorization"] = `${token}`;
+  config.headers["ACCESS_KEY"] = `Bearer ${token}`;
   return config;
 });
 
