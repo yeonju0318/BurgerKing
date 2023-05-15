@@ -36,14 +36,7 @@ function Home() {
     //db로부터 값을 가져올 것이다.
     fetchTodos();
   }, [])
-  
-  const [selectedItem, setSelectedItem] = useState("신제품&할인팩");
-  const [selectCategory, setSelectCategory] = useState(false)
-  const itemClickHandler = (asd) => {
-    setSelectedItem(asd);
-    setSelectCategory(!selectCategory)
-  };
-  const burger =burgers?.filter((item)=>item.category==selectedItem) 
+  // console.log(burgers)
   return (
     <>
       <Header />
@@ -55,17 +48,14 @@ function Home() {
           <StNavMenuList>
             <StMenu>메뉴소개</StMenu>
             <StMenuList>
-              {selectCategory?<StBurgers onClick={(e)=>itemClickHandler("스페셜&할인팩")}>스페셜&할인팩</StBurgers>
-              :
-              <StBurgers2 onClick={(e)=>itemClickHandler("스페셜&할인팩")}>스페셜&할인팩</StBurgers2>}
-              <StBurgers onClick={(e)=>itemClickHandler("스페셜&할인팩")}>스페셜&할인팩</StBurgers>
-              <StBurgers onClick={(e)=>itemClickHandler("신제품(NEW)")}>신제품(NEW)</StBurgers>
-              <StBurgers onClick={(e)=>itemClickHandler("프리미엄")}>프리미엄</StBurgers>
-              <StBurgers onClick={(e)=>itemClickHandler("와퍼&주니어")}>와퍼&주니어</StBurgers>
-              <StBurgers onClick={(e)=>itemClickHandler("치킨&슈림프버거")}>치킨&슈림프버거</StBurgers>
-              <StBurgers onClick={(e)=>itemClickHandler("올데이킹&킹모닝")}>올데이킹&킹모닝</StBurgers>
-              <StBurgers onClick={(e)=>itemClickHandler("사이드")}>사이드</StBurgers>
-              <StBurgers onClick={(e)=>itemClickHandler("음료&디저트")}>음료&디저트</StBurgers>
+              <div>신제품&할인팩</div>
+              <div>신제품(NEW)</div>
+              <div>프리미엄</div>
+              <div>와퍼&주니어</div>
+              <div>치킨&슈림프버거</div>
+              <div>올데이킹&킹모닝</div>
+              <div>사이드</div>
+              <div>음료&디저트</div>
             </StMenuList>
           </StNavMenuList>
           <StBurgerList>
@@ -75,7 +65,7 @@ function Home() {
               </div>
               <StImgTitle>스모키 바비큐 와퍼 팩1</StImgTitle>
             </div>
-            {burger?.map((item) => {
+            {burgers?.map((item) => {
               return (
                 <div key={item.id}>
                   <Link to={`/menus/${item.id}`} key={item.id}>
@@ -147,18 +137,6 @@ const StImgTitle = styled.div`
 const StBurgerList = styled.div`
   display: flex;
   gap: 66px;
-  flex-wrap: wrap;
+  flex-wrap: wrap
   
 `
-const StBurgers =styled.div`
-  border-width: 0px 0px 3px 0;
-  /* margin-left: 10px; */
-  &:hover{
-    color: black;
-  }
-`
-const StBurgers2 =styled.div`
-  border: 1px solid pink;
-    color: pink;
-  border-width: 0px 0px 3px 0;
-` 
