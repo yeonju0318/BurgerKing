@@ -1,15 +1,36 @@
 import instance from "../axios/instance";
-
-const addburger = async (newList) => {
+// import { useCookies } from "react-cookie";
+// const [cookies] = useCookies("userAuth");
+// const token = cookies.userAuth;
+// =====미사용=====
+const addburger = async (payload) => {
+    console.log("payload  =" , payload)
     try {
-        const response = await instance.post(`/api/menus`, newList);
+        const response = await instance.post(`/api/menus`, {
+          image:payload.image,
+          category:payload.category,
+          menuName:payload.menuName},{
+            headers: {
+              Authorization: `Bearer ${payload.token}`,
+            },
+          });
         return response.data;
     } catch (err) {
         console.log(`데이터 불러오는 중에 오류 발생: ${err}`);
     }
 }
+
+const getBurgerAll = async (category) => {
+  // console.log("category  = ",category)
+  try {
+      const response = await instance.get(`/api/menus`);
+      return response.data;
+  } catch (err) {
+      console.log(`데이터 불러오는 중에 오류 발생: ${err}`);
+  }
+}
 const getBurger = async (category) => {
-    // console.log("category = ", category)
+    // console.log("category  = ",category)
     try {
         const response = await instance.get(`/api/menus/${category}`);
         return response.data;
@@ -42,4 +63,4 @@ const updateBurger = async (payload) => {
       console.log("포스트 수정 오류");
     }
   };
-export { addburger,getBurger,updateBurger };
+export { addburger,getBurger,updateBurger,getBurgerAll };
