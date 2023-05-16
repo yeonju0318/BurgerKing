@@ -22,7 +22,7 @@ function Signup() {
   const [password, onChangePasswordHandler] = useInput();
   const [emailId, onChangeEmailidHandler] = useInput();
   const [admin, setAdmin] = useState(false);
-  const [tokenSting, setToken] = useState(null);
+  const [tokenString, setToken] = useState(null);
 
   const handleAdminChange = (selectedOption) => {
     setAdmin(selectedOption === "체크");
@@ -45,8 +45,7 @@ function Signup() {
   const formValidation = (e) => {
     e.preventDefault();
     const usernameRegex = /^[a-z0-9]{4,10}$/;
-    const passwordRegex = /^[a-zA-Z0-9]{8,15}$/;
-
+    const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()\-_=+{}[\]|;:'",.<>/?]{8,15}$/;
     if (!userName || !password || !emailId) {
       alert("이메일,비밀번호와 닉네임을 모두 입력하세요.");
       return;
@@ -64,7 +63,7 @@ function Signup() {
         userName,
         password,
         admin,
-        tokenSting,
+        tokenString,
       });
     }
   };
@@ -114,8 +113,8 @@ function Signup() {
                 <InputLabel>TOKEN</InputLabel>
                 <InputField
                   type="text"
-                  id="tokenSting"
-                  name="tokenSting"
+                  id="tokenString"
+                  name="tokenString"
                   onChange={handleTokenChange}
                 />
               </div>

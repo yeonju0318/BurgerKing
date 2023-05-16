@@ -4,17 +4,16 @@ import { useNavigate } from "react-router-dom/dist";
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import instance from "../axios/instance";
-import AWS from "aws-sdk";
-import ReactS3 from 'react-s3';
-import S3upload from 'react-aws-s3';
 import { addburger } from '../api/posts';
 import { useMutation, useQueryClient } from "react-query";
+import { useCookies } from "react-cookie";
+import { useQuery } from "react-query";
 function Header() {
 
   const nav = useNavigate()
-
   // 리액트 쿼리 관련 코드
   const queryClient = useQueryClient();
+  // =====미사용=====
   const mutation = useMutation(addburger, {
     onSuccess: () => {
       queryClient.invalidateQueries("burger")
@@ -24,7 +23,7 @@ function Header() {
   // 이미지 
   const [image, setImage] = useState(null);
   // 메뉴이름
-  const [menuname, setMenuname] = useState("");
+  const [menuName, setMenuname] = useState("");
   // 카테고리
   const [category, setcategory] = useState("")
   // 메뉴 등록창 모달 
@@ -52,16 +51,32 @@ function Header() {
     setCategoryOpen(false);
   };
   //=================================================================
+  const [cookies] = useCookies("userAuth");
+  const token = cookies.userAuth;
+  // console.log("cookies = ",cookies)
+  //  ===============================
   //버거 등록 핸들러
+  const addHandler = async (e) => {
 
-  const addHandler = async(e) => {
     const newList = new FormData();
     newList.append("image", image);
     newList.append("category", category);
-    newList.append("menuname", menuname);
-    console.log(newList)
-    mutation.mutate(newList);
-    showAddModal()
+    newList.append("menuName", menuName);
+    console.log("newList = ", ...newList)
+    // mutation.mutate({newList},{token});
+    try {
+      const response = await instance.post(`/api/menus`, newList, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      showAddModal()
+      return response.data;
+    } catch (err) {
+      console.log(`데이터 불러오는 중에 오류 발생: ${err}`);
+    }
+    alert("메뉴 등록해주세용")
   }
 
   return (
@@ -100,14 +115,13 @@ function Header() {
             <StAddForm
               method="post"
               encType="multipart/form-data"
-                onSubmit={addHandler}
+              onSubmit={addHandler}
             >
               <div>
                 <StAddImg>
                   이미지<input
                     type='file'
                     onChange={handleFileInput}
-                    enc
                   />
                 </StAddImg>
               </div>
@@ -170,8 +184,8 @@ function Header() {
                   /></StAddInputForm>
                 <StAddInputForm>
                   메뉴이름: <StInput
-                    name='menuname'
-                    value={menuname}
+                    name='menuName'
+                    value={menuName}
                     onChange={(e) => setMenuname(e.target.value)}
                   /></StAddInputForm>
 

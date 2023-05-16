@@ -1,160 +1,176 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import instance from "../axios/instance";
-
 import { useParams, useNavigate, } from "react-router-dom/";
 import { styled } from 'styled-components';
-import { getBurger } from '../api/posts';
 import { useQuery } from "react-query";
-
+import { useCookies } from "react-cookie";
+import { getBurgerAll } from "../api/posts";
 function DetaliBurger() {
-  // 파람스
-  const { id } = useParams()
-  // 수정모달
-  const [updateModalOpen, setUpdateModalOpen] = useState(false);
-  // 삭제모달
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    // 파람스
+    const { id } = useParams()
+    // 네비게이터
+    const navigate = useNavigate()
+    // 수정모달
+    const [updateModalOpen, setUpdateModalOpen] = useState(false);
+    // 삭제모달
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    // 이미지 
+    const [image, setImage] = useState(null);
+    // 메뉴이름
+    const [menuName, setMenuName] = useState("");
+    // 카테고리
+    const [category, setCategory] = useState("")
+    // 수정모달창 오픈
+    const updateShowModal = () => {
+        setUpdateModalOpen(!updateModalOpen);
+    };
+    // 삭제모달창 오픈
+    const deleteShowModal = () => {
+        setDeleteModalOpen(!deleteModalOpen);
+    };
+    //들어갈 이미지 핸들러
+    const handleFileInput = (e) => {
+        setImage(e.target.files[0])
+    };
+    //============================================================
 
-  // 이미지 
-  const [image, setImage] = useState(null);
-  // 메뉴이름
-  const [menuname, setMenuname] = useState("");
-  // 카테고리
-  const [category, setcategory] = useState("")
-  // 네비게이터
-  const navigate = useNavigate()
-  // 수정모달창 오픈
-  const updateShowModal = () => {
-    setUpdateModalOpen(!updateModalOpen);
-  };
-  // 삭제모달창 오픈
-  const deleteShowModal = () => {
-    setDeleteModalOpen(!deleteModalOpen);
-  };
-  //===========================
+    //==============쿠키================//
+    const [cookies] = useCookies("userAuth");
+    const token = cookies.userAuth;
 
-  // 수정 핸들러
-  const updateHandler = (e) => {
+    const { isLoading, isError, data } = useQuery("posts", getBurgerAll);
 
-    const { name, value } = e.target
-    return setUpdateList({ ...updateList, [name]: value })
-  }
-  // 수정버튼 axios
-  const updateButtonHandler = async () => {
-    await instance.patch(`/api/menus/${id}`, {
-      category: updateList.category,
-      menuname: updateList.menuname,
-      image:
-        "https://d1cua0vf0mkpiy.cloudfront.net/images/menu/normal/e626ab96-102e-4a1d-9770-cb3a7116877a.png",
-    });
-    setUpdateList({
-      category: "",
-      menuname: "",
+    const burgerAll = data?.menuList
+    const burger = burgerAll?.find((item) => item.menuId == id)
+    console.log("burger = ", burger)
 
-    })
-    setUpdateModalOpen(!updateModalOpen);
-  }
-  // 삭제버튼 axios
-  const deleteHandler = async (id) => {
-    await instance.delete(`/api/menus/${id}`)
-  }
-  
-  const { isLoading, isError, data, enabled } = useQuery(["burgers", ], () => getBurger(), {
-    
-  });
+    //버거 수정 axios
+    const updateButtonHandler = async (e) => {
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+        e.preventDefault();
+        const newList = new FormData();
+        newList.append("image", image);
+        newList.append("category", category);
+        newList.append("menuName", menuName);
+        // console.log("newList = ", ...newList)
+        // mutation.mutate(...newList,token);
+        try {
+            const response = await instance.patch(`/api/menus/${id}`, newList, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            alert("수정됐습니다")
+            // navigate("/");
 
-  if (isError) {
-    return <div>Error occurred.</div>;
-  }
-  // const burger = burgers?.find((item) => item.id == id)
-  console.log("data = ",data)
+            return response.data;
+        } catch (err) {
+            console.log(`데이터 불러오는 중에 오류 발생: ${err}`);
+        }
+    }
 
-  return (
-    <>
-      <div>id: 
-        {/* {burger?.id} */}
-        </div>
-      <StDetailContent>
-        <StFlex>
-          <StAddImg>image: 
-            {/* {burger?.image} */}
-            </StAddImg>
-          <StAddInputForms>
+    //   삭제버튼 axios
+    const deleteHandler = async (id) => {
+        await instance.delete(`/api/menus/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        deleteShowModal();
+        navigate("/");
+    };
 
-            <div>카테고리:<br /> 
-            {/* {burger?.category} */}
+    return (
+        <>
+            <div>id:
+                {burger?.id}
             </div>
-            <br />
-            <div>menuname:<br /> 
-            {/* {burger?.menuname} */}
-            </div>
-            <br />
-            {updateModalOpen && (
-              <div>
-                카테고리 선택
-                <StInput
-                  name="category"
-                  value={updateList.category}
-                  onChange={updateHandler}
-                />
-                <br />
-                <br />
-                메뉴이름 입력
-                <StInput
-                  name="menuname"
-                  value={updateList.menuname}
-                  onChange={updateHandler}
-                />
-                <button onClick={updateButtonHandler}>수정하기</button>
-              </div>
+            <StDetailContent>
+                <StFlex>
+                    <StAddImg src={burger?.imageUrl}>
+
+                    </StAddImg>
+                    <StAddInputForms>
+
+                        <div>카테고리:<br />
+                            {burger?.category}
+                        </div>
+                        <br />
+                        <div>menuname:<br />
+                            {burger?.menuname}
+                        </div>
+                        <br />
+                        {updateModalOpen && (
+                            <form
+                                method="post"
+                                encType="multipart/form-data">
+                                카테고리 선택
+                                <StInput
+                                    name="category"
+                                    value={category}
+                                    onChange={(e) => setCategory(e.target.value)}
+                                />
+                                <br />
+                                <br />
+                                메뉴이름 입력
+                                <StInput
+                                    name="menuName"
+                                    value={menuName}
+                                    onChange={(e) => setMenuName(e.target.value)}
+                                />
+                                <div>
+                                    <input
+                                        type='file'
+                                        onChange={handleFileInput}
+                                    />
+                                </div>
+                                <button onClick={updateButtonHandler}>수정하기</button>
+                            </form>
+                        )}
+                    </StAddInputForms>
+                </StFlex>
+                <div>
+                    <button onClick={updateShowModal}>
+                        {updateModalOpen ? "취소" : "수정"}
+                    </button>
+                    <button onClick={deleteShowModal}>삭제</button>
+                    <button onClick={() => navigate("/")}>확인</button>
+                </div>
+            </StDetailContent>
+            {/* 삭제 모달창 */}
+            {deleteModalOpen && (
+                <ModalOverlay onClick={deleteShowModal}>
+                    <ModalContent onClick={(e) => e.stopPropagation()}>
+                        <p style={{ marginBottom: "10px" }}>삭제 하시겠습니까</p>
+                        <ModalButton>
+                            <button
+                                size="var(--size-small)"
+                                fontSize="var(--font-regular)"
+                                padding="8px"
+                                onClick={deleteShowModal}
+                            >
+                                취소
+                            </button>
+                            <button
+                                size="var(--size-small)"
+                                fontSize="var(--font-regular)"
+                                padding="8px"
+                                onClick={() => {
+                                    deleteHandler(id);
+                                    setTimeout(() => {
+                                        navigate("/");
+                                    });
+                                }}
+                            >
+                                삭제
+                            </button>
+                        </ModalButton>
+                    </ModalContent>
+                </ModalOverlay>
             )}
-          </StAddInputForms>
-        </StFlex>
-        <div>
-          <button onClick={updateShowModal}>
-            {updateModalOpen ? "취소" : "수정"}
-          </button>
-          <button onClick={deleteShowModal}>삭제</button>
-          <button onClick={() => navigate("/")}>확인</button>
-        </div>
-      </StDetailContent>
-      {/* 삭제 모달창 */}
-      {deleteModalOpen && (
-        <ModalOverlay onClick={deleteShowModal}>
-          <ModalContent onClick={(e) => e.stopPropagation()}>
-            <p style={{ marginBottom: "10px" }}>삭제 하시겠습니까</p>
-            <ModalButton>
-              <button
-                size="var(--size-small)"
-                fontSize="var(--font-regular)"
-                padding="8px"
-                onClick={deleteShowModal}
-              >
-                취소
-              </button>
-              <button
-                size="var(--size-small)"
-                fontSize="var(--font-regular)"
-                padding="8px"
-                onClick={() => {
-                  deleteHandler(id);
-                  setTimeout(() => {
-                    navigate("/");
-                  });
-                }}
-              >
-                삭제
-              </button>
-            </ModalButton>
-          </ModalContent>
-        </ModalOverlay>
-      )}
-    </>
-  );
+        </>
+    );
 }
 
 export default DetaliBurger;
@@ -172,10 +188,10 @@ const StFlex = styled.div`
   display: flex;
   justify-content: space-between;
 `;
-export const StAddImg = styled.div`
+export const StAddImg = styled.img`
   width: 400px;
   height: 400px;
-  border: 2px solid pink;
+  /* border: 2px solid pink; */
 `;
 export const StAddInputForms = styled.div`
   /* border: 1px solid black; */
@@ -228,3 +244,9 @@ export const ModalButton = styled.div`
   gap: 12px;
   /* padding: 20px; */
 `;
+const StImg = styled.img`
+  display: flex;
+  width: 240px;
+
+  height: 180px;
+`
