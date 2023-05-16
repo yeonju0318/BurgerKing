@@ -44,7 +44,7 @@ function Navbar(props) {
 
 export default Navbar;
 
-const JoinButton = styled.div`
+export const JoinButton = styled.div`
   background-color: #512314;
   width: 168px;
   height: 50px;

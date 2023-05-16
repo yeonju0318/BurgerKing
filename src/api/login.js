@@ -5,17 +5,14 @@ const login = async (users) => {
     const response = await instance.post(
       `${process.env.REACT_APP_SERVER_URL}/api/login`,
       users
-      // {
-      //   headers: {
-      //     Authorization: "Bearer ACCESS_KEY",
-      //   },
-      // }
     );
-    const accessToken = response.headers.get("ACCESS_KEY");
+    // console.log(response.headers.get("authorization"));
 
+    const accessToken = response.headers.get("authorization");
+    const token = accessToken.split(" ")[1];
     const loginSuccess = response.data;
-    alert(response.data);
-    return { token: accessToken, loginSuccess };
+    alert(response.data.msg);
+    return { token, loginSuccess };
   } catch (error) {
     console.error(error);
     throw error;

@@ -46,6 +46,7 @@ function Signup() {
     e.preventDefault();
     const usernameRegex = /^[a-z0-9]{4,10}$/;
     const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()\-_=+{}[\]|;:'",.<>/?]{8,15}$/;
+
     if (!userName || !password || !emailId) {
       alert("이메일,비밀번호와 닉네임을 모두 입력하세요.");
       return;

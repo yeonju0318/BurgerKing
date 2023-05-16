@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useState, useEffect } from "react";
 import instance from "../axios/instance";
@@ -250,3 +251,4 @@ const StImg = styled.img`
 
   height: 180px;
 `
+

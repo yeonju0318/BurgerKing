@@ -1,32 +1,38 @@
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom/dist";
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import axios from "axios";
 import instance from "../axios/instance";
+
 import { addburger } from '../api/posts';
 import { useMutation, useQueryClient } from "react-query";
 import { useCookies } from "react-cookie";
 import { useQuery } from "react-query";
+import { JoinButton } from "../components/Navbar";
+import Profile from "./Profile";
+
 function Header() {
 
   const nav = useNavigate()
+  const [cookies] = useCookies("userAuth");
+
   // 리액트 쿼리 관련 코드
   const queryClient = useQueryClient();
   // =====미사용=====
   const mutation = useMutation(addburger, {
     onSuccess: () => {
-      queryClient.invalidateQueries("burger")
-      console.log("버거 등록 성공!")
-    }
-  })
-  // 이미지 
+      queryClient.invalidateQueries("burger");
+      console.log("버거 등록 성공!");
+    },
+  });
+  // 이미지
   const [image, setImage] = useState(null);
   // 메뉴이름
   const [menuName, setMenuname] = useState("");
   // 카테고리
-  const [category, setcategory] = useState("")
-  // 메뉴 등록창 모달 
+  const [category, setcategory] = useState("");
+  // 메뉴 등록창 모달
 
   const [addModalOpen, setAddModalOpen] = useState(false);
   // 카테고리 드롭다운
@@ -38,13 +44,12 @@ function Header() {
 
   //들어갈 이미지 핸들러
   const handleFileInput = (e) => {
-    setImage(e.target.files[0])
+    setImage(e.target.files[0]);
   };
   //메뉴 등록창 모달 온오프
   const showAddModal = () => {
-
-    setAddModalOpen(!addModalOpen)
-  }
+    setAddModalOpen(!addModalOpen);
+  };
   //드롭다운 카테고리 클릭시 카테고리 변경 핸들러
   const itemClickHandler = (item) => {
     setcategory(item);
@@ -57,6 +62,7 @@ function Header() {
   //  ===============================
   //버거 등록 핸들러
   const addHandler = async (e) => {
+
 
     const newList = new FormData();
     newList.append("image", image);
@@ -79,6 +85,7 @@ function Header() {
     alert("메뉴 등록해주세용")
   }
 
+
   return (
     <StLayout>
       <StHeaders>
@@ -89,11 +96,19 @@ function Header() {
           >
             <StImg src="https://blog.kakaocdn.net/dn/K9xlJ/btq6gLcC7Tz/KKEl6uQEKpD6sB5uCiTzPK/img.jpg" />
           </div>
-          <h2>메뉴 소개</h2>
+          <div className="flex gap-5 mt-4 font-bold">
+            <h2>메뉴 소개</h2>
+            <h2 onClick={() => nav("/store")}>매장 찾기</h2>
+          </div>
         </StHeader>
         <StHeader>
-          <h2 onClick={showAddModal}>메뉴 등록</h2>
-          <h2 onClick={() => nav("/login")}>로그인</h2>
+          <BurgerAddButton onClick={showAddModal}>메뉴 등록</BurgerAddButton>
+          {cookies.userAuth === "undefined" || !cookies.userAuth ? (
+            <JoinButton onClick={() => nav("/login")}>로그인</JoinButton>
+          ) : (
+            <Profile />
+          )}
+          {/* <h2 onClick={() => nav("/login")}>로그인</h2> */}
         </StHeader>
       </StHeaders>
 
@@ -119,10 +134,12 @@ function Header() {
             >
               <div>
                 <StAddImg>
+
                   이미지<input
                     type='file'
                     onChange={handleFileInput}
                   />
+
                 </StAddImg>
               </div>
 
@@ -130,9 +147,8 @@ function Header() {
               <StAddInputForms>
                 <StAddInputForm>
                   <div>
-                    <div
-                      onClick={() => setCategoryOpen(!categoryOpen)}
-                    >{selectedItem}
+                    <div onClick={() => setCategoryOpen(!categoryOpen)}>
+                      {selectedItem}
                     </div>
                     {categoryOpen && (
                       <DropdownList>
@@ -171,24 +187,28 @@ function Header() {
                           사이드
                         </Stbutton123>
                         <Stbutton123
-                          onClick={() => itemClickHandler("음료&디저트")}                        >
+                          onClick={() => itemClickHandler("음료&디저트")}
+                        >
                           음료&디저트
                         </Stbutton123>
                       </DropdownList>
                     )}
                   </div>
                   <StInput
-                    name='category'
+                    name="category"
                     value={category}
                     onChange={(e) => setcategory(e.target.value)}
-                  /></StAddInputForm>
+                  />
+                </StAddInputForm>
                 <StAddInputForm>
+
                   메뉴이름: <StInput
                     name='menuName'
                     value={menuName}
-                    onChange={(e) => setMenuname(e.target.value)}
-                  /></StAddInputForm>
 
+                    onChange={(e) => setMenuname(e.target.value)}
+                  />
+                </StAddInputForm>
               </StAddInputForms>
             </StAddForm>
           </ModalContent>
@@ -259,8 +279,7 @@ export const StAddImg = styled.div`
   width: 400px;
   height: 400px;
   border: 2px solid pink;
-
-`
+`;
 export const StAddForm = styled.form`
   display: flex;
   gap: 20px;
@@ -309,4 +328,18 @@ export const Stbutton123 = styled.div`
   &:hover {
     filter: brightness(90%);
   }
+`;
+
+const BurgerAddButton = styled.div`
+  background-color: #d72300;
+  width: 168px;
+  height: 50px;
+  border-radius: 25px;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  line-height: 48px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
 `;
