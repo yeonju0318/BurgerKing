@@ -38,6 +38,15 @@ function Login() {
     });
   };
 
+  //KaKao login
+  const REST_API_KEY = "9c2e0815260028b28bff127ae57756af";
+  const REDIRECT_URI = "http://localhost:3000/api/kakao";
+  const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+
+  const kakaoLoginHandler = () => {
+    window.location.href = link;
+  };
+
   return (
     <>
       <Navbar message="로그인" />
@@ -111,7 +120,10 @@ function Login() {
                   />
                   <span>카카오톡 로그인</span>
                 </div>
-                <button className="bg-gray-300 text-gray-700 font-bold rounded-lg">
+                <button
+                  onClick={kakaoLoginHandler}
+                  className="bg-gray-300 text-gray-700 font-bold rounded-lg"
+                >
                   로그인
                 </button>
               </div>

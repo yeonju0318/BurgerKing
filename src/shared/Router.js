@@ -6,6 +6,7 @@ import Signup from "../pages/Signup";
 import Header from "../components/Header";
 import DetaliBurger from "../pages/DetaliBurger";
 import Store from "../pages/Store";
+import Redirection from "../pages/Redirection";
 
 const Router = () => {
   return (
@@ -17,7 +18,7 @@ const Router = () => {
         <Route path="/header" element={<Header />} />
         <Route path="/api/menus/:id" element={<DetaliBurger />} />
         <Route path="/store" element={<Store />} />
-
+        <Route path="/api/kakao" element={<Redirection />} />
       </Routes>
     </BrowserRouter>
   );
