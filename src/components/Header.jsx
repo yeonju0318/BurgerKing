@@ -4,8 +4,7 @@ import { useNavigate } from "react-router-dom/dist";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import instance from "../axios/instance";
-
-import { addburger } from '../api/posts';
+import { addburger } from "../api/posts";
 import { useMutation, useQueryClient } from "react-query";
 import { useCookies } from "react-cookie";
 import { useQuery } from "react-query";
@@ -14,7 +13,8 @@ import Profile from "./Profile";
 
 function Header() {
 
-  const nav = useNavigate()
+  const nav = useNavigate();
+
 
   // 리액트 쿼리 관련 코드
   const queryClient = useQueryClient();
@@ -61,13 +61,11 @@ function Header() {
   //  ===============================
   //버거 등록 핸들러
   const addHandler = async (e) => {
-
-
     const newList = new FormData();
     newList.append("image", image);
     newList.append("category", category);
     newList.append("menuName", menuName);
-    console.log("newList = ", ...newList)
+    console.log("newList = ", ...newList);
     // mutation.mutate({newList},{token});
     try {
       const response = await instance.post(`/api/menus`, newList, {
@@ -76,14 +74,13 @@ function Header() {
           "Content-Type": "multipart/form-data",
         },
       });
-      showAddModal()
+      showAddModal();
       return response.data;
     } catch (err) {
       console.log(`데이터 불러오는 중에 오류 발생: ${err}`);
     }
-    alert("메뉴 등록해주세용")
-  }
-
+    alert("메뉴 등록해주세용");
+  };
 
   return (
     <StLayout>
@@ -136,12 +133,8 @@ function Header() {
             >
               <div>
                 <StAddImg>
-
-                  이미지<input
-                    type='file'
-                    onChange={handleFileInput}
-                  />
-
+                  이미지
+                  <input type="file" onChange={handleFileInput} />
                 </StAddImg>
               </div>
 
@@ -203,11 +196,10 @@ function Header() {
                   />
                 </StAddInputForm>
                 <StAddInputForm>
-
-                  메뉴이름: <StInput
-                    name='menuName'
+                  메뉴이름:{" "}
+                  <StInput
+                    name="menuName"
                     value={menuName}
-
                     onChange={(e) => setMenuname(e.target.value)}
                   />
                 </StAddInputForm>

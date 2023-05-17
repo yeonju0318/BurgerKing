@@ -53,6 +53,7 @@ export const JoinButton = styled.div`
   font-size: 1rem;
   font-weight: bold;
   text-align: center;
+  font-family: "Jua";
   line-height: 48px;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
