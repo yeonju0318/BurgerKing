@@ -8,8 +8,8 @@ import { useState } from "react";
 
 function Store() {
 
-  const [selected_Si, setSelected_Si] = useState("서울특별시");
-  const [selected_Gu, setSelected_Gu] = useState("강남구");
+  const [selected_Si, setSelected_Si] = useState("특별/광역시");
+  const [selected_Gu, setSelected_Gu] = useState("군/구");
   const [searchOpen, setSearchOpen] = useState(false)
   const [siOpen, setSiOpen] = useState(false)
   const [guOpen, setGuOpen] = useState(false)
@@ -19,7 +19,6 @@ function Store() {
   const siDropdown = () => {
     setSiOpen(!siOpen)
     setGuOpen(false)
-
   }
   const guDropdown = () => {
     setGuOpen(!guOpen)
@@ -67,9 +66,18 @@ function Store() {
     "서울특별시", "부산광역시", "대구광역시", "인천광역시", "광주광역시", "대전광역시", "울산광역시", "세종특별자치시", "경기도", "강원도", "충청북도",
     "충청남도", "전라북도", "전라남도", "경상북도", "경상남도", "제주특별자치도",
   ];
-  const search_Gu = [
-    "강남구", "강동구", "강북구", "강서구", "관악구", "광진구", "구로구", "금천구", "노원구", "도봉구", "동대문구", "동작구", "마포구", "서대문구", "서초구", "성동구", "성북구", "송파구", "양천구", "영등포구", "용산구", "은평구", "종로구", "중구", "중랑구"
-  ]
+  const search_Gu = {
+    "서울특별시": [
+      "강남구", "강동구", "강북구", "강서구", "관악구", "광진구", "구로구", "금천구", "노원구", "도봉구", "동대문구", "동작구", "마포구", "서대문구", "서초구", "성동구", "성북구", "송파구", "양천구", "영등포구", "용산구", "은평구", "종로구", "중구", "중랑구"
+    ],
+    "부산광역시": [
+      "강서구", "금정구", "기장군", "남구", "동구", "동래구", "부산진구", "북구", "사상구", "사하구", "서구", "수영구", "연제구", "영도구", "중구", "해운대구"
+    ],
+    "대구광역시": ["남구", "달서구", "달성군", "동구", "북구", "서구", "수성구", "중구"
+    ],
+    "인천광역시": ["강화군", "계양구", "남동구", "동구", "미추홀구", "부평구", "서구", "연수구", "옹진군", "중구"
+    ]
+  }
   const si_ClickHandler = (item) => {
     setSelected_Si(item);
   };
@@ -107,44 +115,44 @@ function Store() {
           <Stasd>
             지역검색
           </Stasd>
-            <StSearch>
-              <div onClick={siDropdown}>
-                <StCategory>
-                  {selected_Si}
-                </StCategory>
-                <StdropdownLists>
+          <StSearch>
+            <div onClick={siDropdown}>
+              <StCategory>
+                {selected_Si}
+              </StCategory>
+              <StdropdownLists>
 
-                  {siOpen &&
-                    search_Si.map((item) => {
-                      return (
-                        <StdropdownList key={item} onClick={() => si_ClickHandler(item)}>
-                          {item}
-                        </StdropdownList>
-                      );
-                    })
-                  }
-                </StdropdownLists>
+                {siOpen &&
+                  search_Si.map((item) => {
+                    return (
+                      <StdropdownList key={item} onClick={() => si_ClickHandler(item)}>
+                        {item}
+                      </StdropdownList>
+                    );
+                  })
+                }
+              </StdropdownLists>
 
-              </div>
-              <div onClick={guDropdown}>
-                <StCategory>
-                  {selected_Gu}
-                </StCategory>
-                <StdropdownLists>
+            </div>
+            <div onClick={guDropdown}>
+              <StCategory>
+                {selected_Gu}
+              </StCategory>
+              <StdropdownLists>
 
-                  {guOpen &&
-                    search_Gu.map((item) => {
-                      return (
-                        <StdropdownList key={item} onClick={() => gu_ClickHandler(item)}>
-                          {item}
-                        </StdropdownList>
-                      );
-                    })
-                  }
-                </StdropdownLists>
+                {guOpen &&
+                  search_Gu[selected_Si]?.map((item) => {
+                    return (
+                      <StdropdownList key={item} onClick={() => gu_ClickHandler(item)}>
+                        {item}
+                      </StdropdownList>
+                    );
+                  })
+                }
+              </StdropdownLists>
 
-              </div>
-            </StSearch>
+            </div>
+          </StSearch>
 
           <StSearchLists>
             <div>  의 검색결과가 있습니다</div>
@@ -250,4 +258,3 @@ const StButton = styled.div`
     height: 20px;
     background-color: transparent;
     `
-    
