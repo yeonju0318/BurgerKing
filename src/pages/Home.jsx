@@ -36,7 +36,7 @@ function Home() {
   if (isError) {
     return <div>Error occurred.</div>;
   }
- const burgers = data.menuList
+ const burgers = data?.menuList
 
   const burger = burgers?.filter((item) => item.category == selectedItem)
 // console.log("burger = ",burger)
@@ -101,7 +101,7 @@ const Stnavbars = styled.div`
 const Stnavbar = styled.div`
   color: white;
   font-size: 16px;
-  height: 38px;
+  height: 60px;
   width: 1200px;
   margin: 0 auto;
   padding-top: 20px;

@@ -15,7 +15,6 @@ import Profile from "./Profile";
 function Header() {
 
   const nav = useNavigate()
-  const [cookies] = useCookies("userAuth");
 
   // 리액트 쿼리 관련 코드
   const queryClient = useQueryClient();
@@ -101,8 +100,11 @@ function Header() {
             <h2 onClick={() => nav("/store")}>매장 찾기</h2>
           </div>
         </StHeader>
-        <StHeader>
+        <StHeader>{cookies.userAuth === "undefined" || !cookies.userAuth ?
+          ""
+          :
           <BurgerAddButton onClick={showAddModal}>메뉴 등록</BurgerAddButton>
+        }
           {cookies.userAuth === "undefined" || !cookies.userAuth ? (
             <JoinButton onClick={() => nav("/login")}>로그인</JoinButton>
           ) : (
