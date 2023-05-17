@@ -63,4 +63,15 @@ const updateBurger = async (payload) => {
       console.log("포스트 수정 오류");
     }
   };
-export { addburger,getBurger,updateBurger,getBurgerAll };
+
+  const getBurgerKing = async (value1,value2) => {
+    console.log("value1 = ",value1)
+    console.log("value2 = ",value2)
+    try {
+        const response = await instance.get(`/api/store?city=${value1}&district=${value2}`);
+        return response.data;
+    } catch (err) {
+        console.log(`데이터 불러오는 중에 오류 발생: ${err}`);
+    }
+}
+export { addburger,getBurger,updateBurger,getBurgerAll,getBurgerKing };
