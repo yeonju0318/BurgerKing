@@ -48,7 +48,9 @@ function Home() {
   if (isError) {
     return <div>Error occurred.</div>;
   }
+
   const burgers = data.menuList;
+
 
   const burger = burgers?.filter((item) => item.category == selectedItem);
   // console.log("burger = ",burger)
