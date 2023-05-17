@@ -8,8 +8,8 @@ import { useState } from "react";
 
 function Store() {
 
-  const [selected_Si, setSelected_Si] = useState("특별/광역시");
-  const [selected_Gu, setSelected_Gu] = useState("군/구");
+  const [selectedSi, setSelectedSi] = useState("서울특별시");
+  const [selectedGu, setSelectedGu] = useState("강남구");
   const [searchOpen, setSearchOpen] = useState(false)
   const [siOpen, setSiOpen] = useState(false)
   const [guOpen, setGuOpen] = useState(false)
@@ -24,49 +24,11 @@ function Store() {
     setGuOpen(!guOpen)
     setSiOpen(false)
   }
-  const new_script = src => {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = src;
-      script.addEventListener('load', () => {
-        resolve();
-      });
-      script.addEventListener('error', e => {
-        reject(e);
-      });
-      document.head.appendChild(script);
-    });
-  };
-  useEffect(() => {
-    //카카오맵 스크립트 읽어오기
-    const my_script = new_script('https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=595018d6bab7f70a6edd2a3ff77d999c');
-
-    //스크립트 읽기 완료 후 카카오맵 설정
-    my_script.then(() => {
-      console.log('script loaded!!!');
-      const kakao = window['kakao'];
-      kakao.maps.load(() => {
-        const mapContainer = document.getElementById('map');
-        const options = {
-          center: new kakao.maps.LatLng(37.56000302825312, 126.97540593203321), //좌표설정
-          level: 3
-        };
-        const map = new kakao.maps.Map(mapContainer, options); //맵생성
-        //마커설정
-        const markerPosition = new kakao.maps.LatLng(37.56000302825312, 126.97540593203321);
-        const marker = new kakao.maps.Marker({
-          position: markerPosition
-        });
-        marker.setMap(map);
-      });
-    });
-  }, []);
-
-  const search_Si = [
+  const searchSi = [
     "서울특별시", "부산광역시", "대구광역시", "인천광역시", "광주광역시", "대전광역시", "울산광역시", "세종특별자치시", "경기도", "강원도", "충청북도",
     "충청남도", "전라북도", "전라남도", "경상북도", "경상남도", "제주특별자치도",
   ];
-  const search_Gu = {
+  const searchGu = {
     "서울특별시": [
       "강남구", "강동구", "강북구", "강서구", "관악구", "광진구", "구로구", "금천구", "노원구", "도봉구", "동대문구", "동작구", "마포구", "서대문구", "서초구", "성동구", "성북구", "송파구", "양천구", "영등포구", "용산구", "은평구", "종로구", "중구", "중랑구"
     ],
@@ -78,93 +40,157 @@ function Store() {
     "인천광역시": ["강화군", "계양구", "남동구", "동구", "미추홀구", "부평구", "서구", "연수구", "옹진군", "중구"
     ]
   }
-  const si_ClickHandler = (item) => {
-    setSelected_Si(item);
+  const siClickHandler = (item) => {
+    setSelectedSi(item);
   };
-  const gu_ClickHandler = (item) => {
-    setSelected_Gu(item);
+  const guClickHandler = (item) => {
+    setSelectedGu(item);
   };
+  //=========================================
   const { isLoading, isError, data, enabled } = useQuery(
-    ["si", selected_Si, "gu", selected_Gu],
-    () => getBurgerKing(selected_Si, selected_Gu),
+    ["si", selectedSi, "gu", selectedGu],
+    () => getBurgerKing(selectedSi, selectedGu),
     {
-      enabled: !!selected_Gu,
+      enabled: !!selectedGu,
     }
   );
+  const store = data?.documents
+  const filterStore = store?.filter((item)=>item.category_group_name!=="주차장")
+  const findStore = filterStore?.find((item) => item.x[0])
+  //=================================맵카카오
+  const { kakao } = window;
+  useEffect(() => {
+    var infowindow = new kakao.maps.InfoWindow({ zIndex: 1 })
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+    var mapContainer = document.getElementById('map');
+    //처음 화면에 보여지는 지도
+    var mapOptions = {
+      center: new kakao.maps.LatLng(findStore?.y, findStore?.x),
+      level: 6
+    };
 
-  if (isError) {
-    return <div>Error occurred.</div>;
-  }
+    var map = new kakao.maps.Map(mapContainer, mapOptions);
 
-  return (<>
+    //각 버거킹 지점들
+    const positions = filterStore?.map((item) => {
+      return (
+        {
+          title: item.place_name,
+          latlng: new kakao.maps.LatLng(item.y, item.x)
+        }
+      )
+    })
+    
+  console.log(positions)
+    // 마커 이미지의 이미지 주소입니다
+    var imageSrc = "data:image/png;base64,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";
 
-    <Navbar message="매장 찾기" />
-    <StContainer>
-      <StMap id="map" />
-      <StButton>
+    for (var i = 0; i < positions?.length; i++) {
+      // 마커 이미지의 이미지 크기 입니다
+      var imageSize = new kakao.maps.Size(58, 80);
+      // 마커 이미지를 생성합니다    
+      var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+      // 마커를 생성합니다
+      var marker = new kakao.maps.Marker({
+        clickable: true,
+        map: map, // 마커를 표시할 지도
+        position: positions[i].latlng, // 마커를 표시할 위치
+        // title: positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+        image: markerImage // 마커 이미지 
+      });
+      // 마커에 표시할 인포윈도우를 생성합니다 
+      var infowindow = new kakao.maps.InfoWindow({
+        content: positions[i].title.split(" ")[1] // 인포윈도우에 표시할 내용
+      });
+ // 마커에 이벤트를 등록하는 함수 만들고 즉시 호출하여 클로저를 만듭니다
+      // 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
+      (function(marker, infowindow) {
+        // 마커에 mouseover 이벤트를 등록하고 마우스 오버 시 인포윈도우를 표시합니다 
+        kakao.maps.event.addListener(marker, 'mouseover', function() {
+            infowindow.open(map, marker);
+        });
 
-        <StSideDropdown onClick={searchDropdown}>112312323</StSideDropdown>
-      </StButton>
-      {searchOpen &&
-        <StSearchBar>
+        // 마커에 mouseout 이벤트를 등록하고 마우스 아웃 시 인포윈도우를 닫습니다
+        kakao.maps.event.addListener(marker, 'mouseout', function() {
+            infowindow.close();
+        });
+    })(marker, infowindow);
+    }
 
-          <Stasd>
-            지역검색
-          </Stasd>
-          <StSearch>
-            <div onClick={siDropdown}>
-              <StCategory>
-                {selected_Si}
-              </StCategory>
-              <StdropdownLists>
+  }, [filterStore])
 
-                {siOpen &&
-                  search_Si.map((item) => {
-                    return (
-                      <StdropdownList key={item} onClick={() => si_ClickHandler(item)}>
-                        {item}
-                      </StdropdownList>
-                    );
-                  })
-                }
-              </StdropdownLists>
 
-            </div>
-            <div onClick={guDropdown}>
-              <StCategory>
-                {selected_Gu}
-              </StCategory>
-              <StdropdownLists>
 
-                {guOpen &&
-                  search_Gu[selected_Si]?.map((item) => {
-                    return (
-                      <StdropdownList key={item} onClick={() => gu_ClickHandler(item)}>
-                        {item}
-                      </StdropdownList>
-                    );
-                  })
-                }
-              </StdropdownLists>
+  //===========================================
+  return (
+    <>
+      <Navbar message="매장 찾기" />
+      <StContainer>
+        <StMap id="map"></StMap>
+        <StButton>
 
-            </div>
-          </StSearch>
+          <StSideDropdown onClick={searchDropdown}>112312323</StSideDropdown>
+        </StButton>
+        {searchOpen &&
+          <StSearchBar>
 
-          <StSearchLists>
-            <div>  의 검색결과가 있습니다</div>
-            <StSearchList>
-              <div>매장이름:</div>
-              <div>매장주소:</div>
-              <div>매장번호:</div>
-            </StSearchList>
-          </StSearchLists>
-        </StSearchBar>}
-    </StContainer>
-  </>)
+            <Stasd>
+              지역검색
+            </Stasd>
+            <StSearch>
+              <div onClick={siDropdown}>
+                <StCategory>
+                  {selectedSi}
+                </StCategory>
+                <StdropdownLists>
+
+                  {siOpen &&
+                    searchSi.map((item) => {
+                      return (
+                        <StdropdownList key={item} onClick={() => siClickHandler(item)}>
+                          {item}
+                        </StdropdownList>
+                      );
+                    })
+                  }
+                </StdropdownLists>
+
+              </div>
+              <div onClick={guDropdown}>
+                <StCategory>
+                  {selectedGu}
+                </StCategory>
+                <StdropdownLists>
+
+                  {guOpen &&
+                    searchGu[selectedSi]?.map((item) => {
+                      return (
+                        <StdropdownList key={item} onClick={() => guClickHandler(item)}>
+                          {item}
+                        </StdropdownList>
+                      );
+                    })
+                  }
+                </StdropdownLists>
+
+              </div>
+            </StSearch>
+
+            <StSearchLists>
+              <div>  {filterStore?.length}의 검색결과가 있습니다</div>
+              {filterStore?.map((item) => {
+                return (
+                  <StSearchList>
+                    <div>매장이름:{item.place_name}</div>
+                    <div>매장주소:{item.address_name}</div>
+                    <div>매장번호:{item.phone}</div>
+                  </StSearchList>
+                )
+              })}
+            </StSearchLists>
+          </StSearchBar>}
+      </StContainer>
+    </>)
 }
 
 export default Store;
@@ -208,6 +234,7 @@ const StSearchList = styled.div`
 border: 2px solid black;
 display: block;
 padding: 10px;
+margin: 10px;
 `
 const StCategory = styled.div`
   height: 50px;
