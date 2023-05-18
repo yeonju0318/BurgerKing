@@ -60,6 +60,7 @@ function Header() {
   const admin = cookiess.asd.result.isAdmin;
 
   console.log("admin = ",admin)
+
   //  ===============================
   //버거 등록 핸들러
   const addHandler = async (e) => {
@@ -97,7 +98,7 @@ function Header() {
           <div className="flex gap-5 mt-4 font-bold">
             <h2>메뉴 소개</h2>
             <h2 onClick={() => nav("/store")}>매장 찾기</h2>
-            <p>안녕하세요, {userName}님!</p>
+            {userName ? <p>안녕하세요, {userName}님!</p> : ""}
           </div>
         </StHeader>
         <StHeader>{cookies.userAuth === "undefined" || !cookies.userAuth ||admin===false?
