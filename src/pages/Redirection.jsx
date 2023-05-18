@@ -19,12 +19,12 @@ function Redirection() {
       .then((r) => {
         console.log(r);
 
-        // const accessToken = r.headers.authorization;
-        // const token = accessToken.split(" ")[1];
+        const accessToken = r.headers.authorization;
+        const token = accessToken.split(" ")[1];
 
-        // setCookie("userAuth", token, { path: "/" });
+        setCookie("userAuth", token, { path: "/" });
 
-        localStorage.setItem("name", r.data.nickname);
+        localStorage.setItem("name", r.data.username);
         alert("로그인 성공");
         navigate("/");
       });

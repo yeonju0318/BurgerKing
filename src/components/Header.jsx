@@ -56,6 +56,10 @@ function Header() {
   //=================================================================
   const [cookies] = useCookies("userAuth");
   const token = cookies.userAuth;
+  useEffect(() => {
+    // 로그인 상태가 변경될 때마다 컴포넌트를 리렌더링합니다.
+  }, [cookies.userAuth]);
+
   // console.log("cookies = ",cookies)
   //  ===============================
   //버거 등록 핸들러
@@ -94,7 +98,7 @@ function Header() {
           <div className="flex gap-5 mt-4 font-bold">
             <h2>메뉴 소개</h2>
             <h2 onClick={() => nav("/store")}>매장 찾기</h2>
-            <p>안녕하세요, {userName}님!</p>
+            {userName ? <p>안녕하세요, {userName}님!</p> : ""}
           </div>
         </StHeader>
         <StHeader>
