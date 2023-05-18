@@ -19,12 +19,12 @@ function Login() {
       const expireTime = new Date(new Date().getTime() + 30 * 60 * 1000);
       console.log(loginSuccess);
       setCookie("userAuth", token, { path: "/", expires: expireTime });
+      setCookie("asd", loginSuccess, { path: "/", expires: expireTime });
       setTimeout(() => {
         navigate("/");
       }, 600);
     },
   });
-
   const loginHandler = (e) => {
     e.preventDefault();
     console.log("test");

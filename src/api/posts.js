@@ -70,15 +70,19 @@ const updateBurger = async (payload) => {
 };
 
 const getBurgerKing = async (value1, value2) => {
+
   console.log("value1 = ", value1);
   console.log("value2 = ", value2);
   try {
     const response = await instance.get(
       `/api/store?city=${value1}&district=${value2}`
     );
+
     return response.data;
   } catch (err) {
     console.log(`데이터 불러오는 중에 오류 발생: ${err}`);
   }
+
 };
+
 export { addburger, getBurger, updateBurger, getBurgerAll, getBurgerKing };

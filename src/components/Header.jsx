@@ -56,11 +56,11 @@ function Header() {
   //=================================================================
   const [cookies] = useCookies("userAuth");
   const token = cookies.userAuth;
-  useEffect(() => {
-    // 로그인 상태가 변경될 때마다 컴포넌트를 리렌더링합니다.
-  }, [cookies.userAuth]);
+  const [cookiess] = useCookies("asd");
+  const admin = cookiess.asd.result.isAdmin;
 
-  // console.log("cookies = ",cookies)
+  console.log("admin = ",admin)
+
   //  ===============================
   //버거 등록 핸들러
   const addHandler = async (e) => {
@@ -82,7 +82,7 @@ function Header() {
     } catch (err) {
       console.log(`데이터 불러오는 중에 오류 발생: ${err}`);
     }
-    alert("메뉴 등록해주세용");
+    // alert("메뉴 등록해주세용");
   };
 
   return (
@@ -101,12 +101,11 @@ function Header() {
             {userName ? <p>안녕하세요, {userName}님!</p> : ""}
           </div>
         </StHeader>
-        <StHeader>
-          {cookies.userAuth === "undefined" || !cookies.userAuth ? (
-            ""
-          ) : (
-            <BurgerAddButton onClick={showAddModal}>메뉴 등록</BurgerAddButton>
-          )}
+        <StHeader>{cookies.userAuth === "undefined" || !cookies.userAuth ||admin===false?
+          ""
+          :
+          <BurgerAddButton onClick={showAddModal}>메뉴 등록</BurgerAddButton>
+  }
           {cookies.userAuth === "undefined" || !cookies.userAuth ? (
             <JoinButton onClick={() => nav("/login")}>로그인</JoinButton>
           ) : (
