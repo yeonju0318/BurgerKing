@@ -106,12 +106,12 @@ function Store() {
       // 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
       (function(marker, infowindow) {
         // 마커에 mouseover 이벤트를 등록하고 마우스 오버 시 인포윈도우를 표시합니다 
-        kakao.maps.event.addListener(marker, 'mouseover', function() {
+        kakao?.maps.event.addListener(marker, 'mouseover', function() {
             infowindow.open(map, marker);
         });
 
         // 마커에 mouseout 이벤트를 등록하고 마우스 아웃 시 인포윈도우를 닫습니다
-        kakao.maps.event.addListener(marker, 'mouseout', function() {
+        kakao?.maps.event.addListener(marker, 'mouseout', function() {
             infowindow.close();
         });
     })(marker, infowindow);

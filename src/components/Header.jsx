@@ -57,7 +57,7 @@ function Header() {
   const [cookies] = useCookies("userAuth");
   const token = cookies.userAuth;
   const [cookiess] = useCookies("asd");
-  const admin = cookiess.asd.result.isAdmin;
+  const admin = cookiess?.asd.result.isAdmin;
 
   console.log("admin = ",admin)
 
