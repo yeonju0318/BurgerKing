@@ -35,7 +35,7 @@ function Signup() {
   const queryClient = useQueryClient();
   const mutation = useMutation(signup, {
     onSuccess: () => {
-      console.log("회원가입 완료");
+      // console.log("회원가입 완료");
       alert("회원가입 완료");
       navigate("/login");
     },
@@ -77,7 +77,7 @@ function Signup() {
           <SignupTitle>기본정보</SignupTitle>
           <form onSubmit={formValidation}>
             <InputContainer>
-              <div>test</div>
+              <div className="mt-2 mb-2"></div>
               <div>
                 <InputLabel>이메일</InputLabel>
                 <InputField
@@ -101,7 +101,7 @@ function Signup() {
             </InputContainer>
             <SignupTitle>선택정보</SignupTitle>
             <InputContainer>
-              <div>test</div>
+              <div className="mt-5"></div>
               <div className="flex">
                 <InputLabel>ADMIN</InputLabel>
                 <InputRadio
@@ -123,7 +123,7 @@ function Signup() {
             <SignupTitle>비밀번호 입력</SignupTitle>
 
             <InputContainer>
-              <div>test</div>
+              <div className="mt-4"></div>
               <div>
                 <InputLabel>비밀번호</InputLabel>
                 <InputField

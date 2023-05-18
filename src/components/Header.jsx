@@ -12,9 +12,8 @@ import { JoinButton } from "../components/Navbar";
 import Profile from "./Profile";
 
 function Header() {
-
   const nav = useNavigate();
-
+  const userName = localStorage.getItem("name");
 
   // 리액트 쿼리 관련 코드
   const queryClient = useQueryClient();
@@ -98,6 +97,7 @@ function Header() {
           <div className="flex gap-5 mt-4 font-bold">
             <h2>메뉴 소개</h2>
             <h2 onClick={() => nav("/store")}>매장 찾기</h2>
+            <p>안녕하세요, {userName}님!</p>
           </div>
         </StHeader>
         <StHeader>{cookies.userAuth === "undefined" || !cookies.userAuth ||admin===false?
