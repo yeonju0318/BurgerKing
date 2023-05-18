@@ -50,11 +50,11 @@ function Home() {
   }
 
   const burgers = data.menuList;
-
+  
 
   const burger = burgers?.filter((item) => item.category == selectedItem);
   // console.log("burger = ",burger)
-  console.log("data = ", burger);
+  // console.log("data = ", data);
   return (
     <>
       <Header />

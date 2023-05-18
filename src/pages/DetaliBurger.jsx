@@ -57,6 +57,8 @@ function DetaliBurger() {
     //==============쿠키================//
     const [cookies] = useCookies("userAuth");
     const token = cookies.userAuth;
+    const [cookiess] = useCookies("asd");
+    const admin = cookiess.asd.result.isAdmin;
 
     const { isLoading, isError, data } = useQuery("posts", getBurgerAll);
 
@@ -109,12 +111,18 @@ function DetaliBurger() {
                 <StButtons>
                     <Stbutton1>
                         <StButton onClick={() => navigate("/")}>뒤로가기</StButton>
-                        <StButton onClick={deleteShowModal}>삭제</StButton>
+                        {cookies.userAuth === "undefined" || !cookies.userAuth || admin === false ?
+                            ""
+                            :
+                            <StButton onClick={deleteShowModal}>삭제</StButton>}
                     </Stbutton1>
                     <div>
-                        <StButton onClick={updateShowModal}>
-                            {updateModalOpen ? "취소" : "수정"}
-                        </StButton>
+                        {cookies.userAuth === "undefined" || !cookies.userAuth || admin === false ?
+                            ""
+                            :
+                            <StButton onClick={updateShowModal}>
+                                {updateModalOpen ? "취소" : "수정"}
+                            </StButton>}
                     </div>
                 </StButtons>
                 <StFlex>
@@ -123,13 +131,13 @@ function DetaliBurger() {
                     <StAddInputForms>
                         {updateModalOpen ?
                             ""
-                            :<>
-                            <StChangeDiv>카테고리:<br />
-                                {burger?.category}
-                            </StChangeDiv>
-                            <StChangeDiv>메뉴:<br />
-                                {burger?.menuName}
-                            </StChangeDiv>
+                            : <>
+                                <StChangeDiv>카테고리:<br />
+                                    {burger?.category}
+                                </StChangeDiv>
+                                <StChangeDiv>메뉴:<br />
+                                    {burger?.menuName}
+                                </StChangeDiv>
                             </>
                         }
                         <br />
@@ -143,17 +151,17 @@ function DetaliBurger() {
                                     <StChangeButton
                                         type="button"
                                         onClick={openCategory}
-                                        >변경할 카테고리 선택<br /> {category}
+                                    >변경할 카테고리 선택<br /> {category}
                                     </StChangeButton>
-                                {openDropdown &&
-                                    <div>
-                                        {test.map((item) => {
-                                            return (
-                                                <StChangeButtonDropDown key={item} onClick={() => itemClickHandler(item)}>{item}</StChangeButtonDropDown>
+                                    {openDropdown &&
+                                        <div>
+                                            {test.map((item) => {
+                                                return (
+                                                    <StChangeButtonDropDown key={item} onClick={() => itemClickHandler(item)}>{item}</StChangeButtonDropDown>
                                                 )
                                             })}
-                                    </div>}
-                                            </>
+                                        </div>}
+                                </>
                                 <form
                                     method="post"
                                     encType="multipart/form-data">
@@ -179,7 +187,7 @@ function DetaliBurger() {
                                 </form>
                             </>
                         )}
-                        
+
                     </StAddInputForms>
                 </StFlex>
             </StDetailContent>

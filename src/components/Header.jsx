@@ -57,7 +57,10 @@ function Header() {
   //=================================================================
   const [cookies] = useCookies("userAuth");
   const token = cookies.userAuth;
-  // console.log("cookies = ",cookies)
+  const [cookiess] = useCookies("asd");
+  const admin = cookiess.asd.result.isAdmin;
+
+  console.log("admin = ",admin)
   //  ===============================
   //버거 등록 핸들러
   const addHandler = async (e) => {
@@ -79,7 +82,7 @@ function Header() {
     } catch (err) {
       console.log(`데이터 불러오는 중에 오류 발생: ${err}`);
     }
-    alert("메뉴 등록해주세용");
+    // alert("메뉴 등록해주세용");
   };
 
   return (
@@ -97,11 +100,11 @@ function Header() {
             <h2 onClick={() => nav("/store")}>매장 찾기</h2>
           </div>
         </StHeader>
-        <StHeader>{cookies.userAuth === "undefined" || !cookies.userAuth ?
+        <StHeader>{cookies.userAuth === "undefined" || !cookies.userAuth ||admin===false?
           ""
           :
           <BurgerAddButton onClick={showAddModal}>메뉴 등록</BurgerAddButton>
-        }
+  }
           {cookies.userAuth === "undefined" || !cookies.userAuth ? (
             <JoinButton onClick={() => nav("/login")}>로그인</JoinButton>
           ) : (
