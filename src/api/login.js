@@ -12,6 +12,7 @@ const login = async (users) => {
     const token = accessToken.split(" ")[1];
     const loginSuccess = response.data;
     alert(response.data.msg);
+
     return { token, loginSuccess };
   } catch (error) {
     console.error(error);

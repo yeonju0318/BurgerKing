@@ -8,10 +8,13 @@ function Profile() {
   const logoutHandler = async () => {
     try {
       removeCookie("userAuth");
+      localStorage.removeItem("name");
+
+      alert("로그아웃 완료");
 
       setTimeout(() => {
         window.location.href = "/";
-      }, 1000);
+      }, 800);
     } catch (error) {
       console.log(error);
     }
