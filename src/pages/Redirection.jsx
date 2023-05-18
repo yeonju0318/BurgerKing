@@ -24,7 +24,7 @@ function Redirection() {
 
         setCookie("userAuth", token, { path: "/" });
 
-        localStorage.setItem("name", r.data.username);
+        localStorage.setItem("name", r.data.result);
         alert("로그인 성공");
         navigate("/");
       });
