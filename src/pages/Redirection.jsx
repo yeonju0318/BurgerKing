@@ -1,10 +1,12 @@
 import axios from "axios";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 
 function Redirection() {
   const code = new URL(window.location.href).searchParams.get("code");
   const navigate = useNavigate();
+  const [cookies, setCookie, removeCookie] = useCookies();
 
   useEffect(() => {
     console.log(process.env.REACT_APP_SERVER_URL);
@@ -17,7 +19,12 @@ function Redirection() {
       .then((r) => {
         console.log(r);
 
-        localStorage.setItem("name", r.data.user_name);
+        // const accessToken = r.headers.authorization;
+        // const token = accessToken.split(" ")[1];
+
+        // setCookie("userAuth", token, { path: "/" });
+
+        localStorage.setItem("name", r.data.nickname);
         alert("로그인 성공");
         navigate("/");
       });
